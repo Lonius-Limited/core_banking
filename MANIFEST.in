@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include core_banking *.css
+recursive-include core_banking *.csv
+recursive-include core_banking *.html
+recursive-include core_banking *.ico
+recursive-include core_banking *.js
+recursive-include core_banking *.json
+recursive-include core_banking *.md
+recursive-include core_banking *.png
+recursive-include core_banking *.py
+recursive-include core_banking *.svg
+recursive-include core_banking *.txt
+recursive-exclude core_banking *.pyc
