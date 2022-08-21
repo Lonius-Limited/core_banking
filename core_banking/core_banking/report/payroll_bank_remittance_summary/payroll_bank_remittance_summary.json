@@ -1,0 +1,31 @@
+{
+ "add_total_row": 1,
+ "columns": [],
+ "creation": "2022-07-21 10:55:42.795508",
+ "disable_prepared_report": 0,
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": "MTRH Default",
+ "modified": "2022-07-21 10:55:42.795508",
+ "modified_by": "Administrator",
+ "module": "Core Banking",
+ "name": "Payroll Bank Remittance Summary",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "query": "select bank_name, SUM(total_taxable_earnings + total_non_taxable_earnings + total_non_cash_benefits - total_deduction) from `tabSalary Slip` group by bank_name;",
+ "ref_doctype": "Salary Slip",
+ "report_name": "Payroll Bank Remittance Summary",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "Employee Self Service"
+  },
+  {
+   "role": "HR Manager"
+  }
+ ]
+}

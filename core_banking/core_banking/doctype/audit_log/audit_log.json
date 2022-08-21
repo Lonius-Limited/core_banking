@@ -1,0 +1,40 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2022-04-08 11:29:13.123710",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "actioned_by",
+  "version_document"
+ ],
+ "fields": [
+  {
+   "fieldname": "actioned_by",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Actioned By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "version_document",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Version Document",
+   "options": "Version",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2022-04-08 21:01:34.861545",
+ "modified_by": "Administrator",
+ "module": "Core Banking",
+ "name": "Audit Log",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

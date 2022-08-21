@@ -1,0 +1,51 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2022-04-07 17:05:33.190107",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "id_number",
+  "nok_fullname",
+  "relation"
+ ],
+ "fields": [
+  {
+   "fieldname": "id_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "ID Number/Passport/Birth Certificate",
+   "reqd": 1
+  },
+  {
+   "fieldname": "relation",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Relation",
+   "options": "\nFather\nMother\nChild\nBrother\nSister\nSpouse\nOther",
+   "reqd": 1
+  },
+  {
+   "columns": 2,
+   "description": "As per identification document",
+   "fieldname": "nok_fullname",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Full Name (As Per ID)",
+   "reqd": 1,
+   "width": "4"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2022-04-08 20:51:55.165951",
+ "modified_by": "Administrator",
+ "module": "Core Banking",
+ "name": "Member NOK",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

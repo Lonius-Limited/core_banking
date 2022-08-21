@@ -1,0 +1,75 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2022-04-07 19:50:42.360998",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "pf_number",
+  "employer_contribution",
+  "employee_contribution",
+  "additional_voluntary_contribution",
+  "interest_earned",
+  "reference_document"
+ ],
+ "fields": [
+  {
+   "fieldname": "pf_number",
+   "fieldtype": "Data",
+   "label": "PF Number",
+   "reqd": 1
+  },
+  {
+   "fieldname": "employer_contribution",
+   "fieldtype": "Currency",
+   "label": "Employer Contribution"
+  },
+  {
+   "fieldname": "employee_contribution",
+   "fieldtype": "Currency",
+   "label": "Employee Contribution"
+  },
+  {
+   "fieldname": "additional_voluntary_contribution",
+   "fieldtype": "Currency",
+   "label": "Additional Voluntary Contribution"
+  },
+  {
+   "fieldname": "interest_earned",
+   "fieldtype": "Currency",
+   "label": "Interest Earned"
+  },
+  {
+   "fieldname": "reference_document",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Reference Document",
+   "options": "Pension Contributions Upload",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2022-04-07 23:29:41.039459",
+ "modified_by": "Administrator",
+ "module": "Core Banking",
+ "name": "Pension Contributions Upload Template",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

@@ -1,0 +1,29 @@
+[
+ {
+  "absolute_value": 0,
+  "align_labels_right": 0,
+  "css": null,
+  "custom_format": 0,
+  "default_print_language": "en",
+  "disabled": 0,
+  "doc_type": "Payroll Entry",
+  "docstatus": 0,
+  "doctype": "Print Format",
+  "font": "Default",
+  "format_data": "[{\"fieldname\": \"print_heading_template\", \"fieldtype\": \"Custom HTML\", \"options\": \"<div class=\\\"print-heading\\\">\\t\\t\\t\\t<h2><div>Payroll Entry - COMPANY TOTALS</div><br><small class=\\\"sub-heading\\\">{{ doc.name }}</small>\\t\\t\\t\\t</h2></div>\"}, {\"fieldtype\": \"Section Break\", \"label\": \"Payroll Details\"}, {\"fieldtype\": \"Column Break\"}, {\"fieldname\": \"payroll_frequency\", \"print_hide\": 0, \"label\": \"Payroll Frequency\"}, {\"fieldname\": \"start_date\", \"print_hide\": 0, \"label\": \"Start Date\"}, {\"fieldname\": \"end_date\", \"print_hide\": 0, \"label\": \"End Date\"}, {\"fieldtype\": \"Section Break\", \"label\": \"\"}, {\"fieldtype\": \"Column Break\"}, {\"fieldname\": \"_custom_html\", \"print_hide\": 0, \"label\": \"Custom HTML\", \"fieldtype\": \"HTML\", \"options\": \"<h4>TOTAL TAXABLE EARNINGS</h4>\\n{{ doc.taxable_earnings }}\\n<hr>\\n<h4>TOTAL NON CASH BENEFITS</h4>\\n{{ doc.non_cash_benefits }}\\n<hr>\\n<h4>TOTAL RELIEF(PENSION, NSSF, UTILITY BENEFITS and other relieved Components)</h4>\\n{{ doc.less_relief }}\\n<hr>\\n<h4>TOTAL DEDUCTIONS</h4>\\n{{ doc.deductions }}\\n<hr>\\n<h4>NET PAY</h4>\\n{{ doc.net_pay }}\"}]",
+  "html": null,
+  "line_breaks": 0,
+  "modified": "2022-07-21 11:39:05.083605",
+  "module": "Core Banking",
+  "name": "Company Totals",
+  "parent": null,
+  "parentfield": null,
+  "parenttype": null,
+  "print_format_builder": 1,
+  "print_format_type": "Jinja",
+  "raw_commands": null,
+  "raw_printing": 0,
+  "show_section_headings": 0,
+  "standard": "No"
+ }
+]

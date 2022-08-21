@@ -1,0 +1,120 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2022-04-07 19:13:15.660769",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "html_1",
+  "sponsor",
+  "document_reference",
+  "section_break_3",
+  "effective_date",
+  "remarks",
+  "excel_upload",
+  "column_break_6",
+  "download_template",
+  "section_break_8",
+  "status",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "html_1",
+   "fieldtype": "HTML",
+   "options": "<p>Please <em>STRICTLY</em> use the excel sheet template provided on the <strong>Download Template</strong></p>\n<p>NB: <strong style=\"color: red;\">Please Fill In the Downloaded Template as is. DO NOT ALTER COLUMN HEADERS</strong></p>"
+  },
+  {
+   "description": "Document Number or Title e.g January 2022 Pension Contributions",
+   "fieldname": "document_reference",
+   "fieldtype": "Data",
+   "label": "Document Reference(Optional)"
+  },
+  {
+   "depends_on": "eval:doc.sponsor",
+   "fieldname": "section_break_3",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "effective_date",
+   "fieldtype": "Date",
+   "label": "Effective Date",
+   "reqd": 1
+  },
+  {
+   "description": "Describe the type or purpose of check off. e.g Initial Bank Loan, Top up, Shares, Welfare Contribution, Benevolent Fund etc.",
+   "fieldname": "remarks",
+   "fieldtype": "Text",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "excel_upload",
+   "fieldtype": "Attach",
+   "in_list_view": 1,
+   "label": "Excel Upload",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "download_template",
+   "fieldtype": "Button",
+   "label": "Download Template"
+  },
+  {
+   "fieldname": "section_break_8",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Initiated\nProcessed\nRejected\nApproved",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sponsor",
+   "fieldtype": "Link",
+   "label": "Sponsor",
+   "options": "Membership Type",
+   "reqd": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Pension Contributions Upload",
+   "print_hide": 1,
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2022-04-10 13:49:58.904863",
+ "modified_by": "Administrator",
+ "module": "Core Banking",
+ "name": "Pension Contributions Upload",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "title_field": "document_reference"
+}
