@@ -13,9 +13,11 @@ from frappe.utils import (
 	getdate,
 )
 from core_banking.core_banking.report.company_totals.company_totals import (
+	get_reports,
 	payroll_gl_accrual,
 	get_net_pay_totals,
 )
+from frappe.desk.query_report import run
 
 
 def set_title_field(doc, state):
@@ -327,18 +329,25 @@ def process_approved_payrolls(doc, state):
 	docname = doc.name
 	if doc.get("workflow_state") == "Pending Approval":
 		try:
-			post_payroll_journal(docname)		
+			post_payroll_journal(docname)
 		except Exception as e:
 			frappe.throw(f"{e}")
-	if  doc.get("workflow_state") == "Approved":
-		journal_entry = frappe.get_value("Salary Slip",dict(payroll_entry=docname),"journal_entry")
-		if not journal_entry: frappe.throw("Sorry, no accounting entries have been posted for approval, please click 'Send to Draft'.")
-		jv = frappe.get_doc("Journal Entry",journal_entry)
+	if doc.get("workflow_state") == "Approved":
+		journal_entry = frappe.get_value(
+			"Salary Slip", dict(payroll_entry=docname), "journal_entry"
+		)
+		if not journal_entry:
+			frappe.throw(
+				"Sorry, no accounting entries have been posted for approval, please click 'Send to Draft'."
+			)
+		jv = frappe.get_doc("Journal Entry", journal_entry)
 		try:
 			process_payroll_payments(jv, doc)
 		except Exception as e:
 			frappe.throw(f"{e}")
-def process_payroll_payments(jv, payroll_entry_doc):#(jv:doc,payroll_entry_doc:doc)
+
+
+def process_payroll_payments(jv, payroll_entry_doc):  # (jv:doc,payroll_entry_doc:doc)
 	posting_date = payroll_entry_doc.get("posting_date")
 	payroll_entry = payroll_entry_doc.get("name")
 	# frappe.throw(f"{posting_date}")
@@ -346,7 +355,7 @@ def process_payroll_payments(jv, payroll_entry_doc):#(jv:doc,payroll_entry_doc:d
 		x for x in jv.get("accounts") if x.get("credit_in_account_currency") > 0.0
 	]
 	distinct_accounts = list(dict.fromkeys([x.get("account") for x in accounts]))
-	
+
 	company = jv.get("company")
 	default_cash_account = frappe.get_value("Company", company, "default_cash_account")
 
@@ -376,30 +385,39 @@ def process_payroll_payments(jv, payroll_entry_doc):#(jv:doc,payroll_entry_doc:d
 		pe.received_amount = total
 		pe.reference_no = payroll_entry
 		pe.reference_date = posting_date
-		pe.party_type = ("Supplier")
+		pe.party_type = "Supplier"
 		pe.party = default_payroll_party()
 		####
 		pe.title = "Payroll Deduction - {}".format(account_name)
+
+		pe.payroll_entry = payroll_entry
 
 		pe.custom_remarks = 1
 
 		formatted_total = frappe.format(total, dict(fieldtype="Currency"))
 
 		pe.remarks = "Being payment of {} to Payroll deduction: {} Transaction reference no {} dated {}".format(
-		    formatted_total, account_name, payroll_entry, posting_date
+			formatted_total, account_name, payroll_entry, posting_date
 		)
 
 		pe.save(ignore_permissions=True)
 
 		payments.append(pe.name)
 	payments_html = list(
-	    map(lambda x: "<a href='/app/payroll-entry/{}' style='color:green'>{}</a>".format(x,x), payments)
+		map(
+			lambda x: "<a href='/app/payment-entry/{}' style='color:green'>{}</a><br><br>".format(
+				x, x
+			),
+			payments,
+		)
 	)
 	frappe.msgprint(
-	    "<h4>Posted {} payment documents:</h4>{}".format(
-	        len(payments_html), "".join(payments_html)
-	    )
+		"<h4>Posted {} payment documents:</h4>{}".format(
+			len(payments_html), "".join(payments_html)
+		)
 	)
+
+
 def default_payroll_party():
 	default = "Payroll Deductions"
 	if not frappe.get_value("Supplier", default):
@@ -411,3 +429,35 @@ def default_payroll_party():
 		)
 		frappe.get_doc(args).insert()
 	return default
+
+
+@frappe.whitelist()
+def account_components_in_payroll_entry(account, payroll_entry, payment_entry=None):
+	payroll_summary = get_reports(payroll_entry)
+	components = [
+		x.get("parent")
+		for x in frappe.get_all(
+			"Salary Component Account", filters=dict(account=account), fields=["*"]
+		)
+	]
+	response =[]
+
+	for component in components:
+		report_name ="Company totals per Component"
+		filters = dict(salary_component=component, payroll_entry=payroll_entry)
+		pl = run(report_name, filters, user="Administrator")
+		res = pl.get('result')
+		
+		if not res : return []
+		data = [x for x in res if not isinstance(x,list)]
+		list(map(lambda b:response.append(b),data))
+	# # if payroll_entry:
+	# heading = '<table class="table table-striped"><tr><td>Employee ID</td><td>Employee Name</td><td>Amount</td></tr>'
+	# body_list = list(
+	# 	map(
+	# 		lambda employee: "<tr><td>{}</td><td>{}</td><td>{} {}</td></tr>".format(employee.get("employee"),employee.get("employee_name"),)
+	# 	)
+	# )
+	return response
+
+	

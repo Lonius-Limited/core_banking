@@ -31,7 +31,7 @@ from frappe.utils import (
 
 def flatten_this_slip(payroll_entry='', slip=None, count=0):
 	# return
-	frappe.msgprint(slip.get("name"), "Adding to Analytics")
+	# frappe.msgprint(slip.get("name"), "Adding to Analytics")
 	dn = slip.get("employee") + "-" + payroll_entry
 	if frappe.get_value("Salary Slip Repository", dn):
 		frappe.get_doc("Salary Slip Repository", dn).delete(ignore_permissions=True)
@@ -112,7 +112,7 @@ def get_flat_repo(lst, information):
 		output[field] = amount
 	return output
 def flatten_salary_slips():
-	payroll_entry = "January 2022 Payroll"
+	payroll_entry = "08-2022 PAYROLL.-102"
 	count = 0
 	for slip in frappe.get_all(
 		"Salary Slip", filters=dict(payroll_entry=payroll_entry), fields=["*"]
