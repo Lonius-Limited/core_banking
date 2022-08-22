@@ -4,6 +4,7 @@
 # import frappe
 
 
+from core_banking.api.salary_slip import flatten_this_slip
 import frappe
 from frappe.core.page.background_jobs.background_jobs import get_info
 from frappe.utils.background_jobs import enqueue
@@ -218,7 +219,7 @@ def get_net_pay_totals(entry):
 		# doc = frappe.get_doc('Salary Slip', slip.get('name'))
 		net_pay = slip.get("net_amount") #(slip.get('total_taxable_earnings') + slip.get('total_non_taxable_earnings') + slip.get('total_non_cash_benefits'))-slip.get('total_deduction')
 		output['total'] += net_pay
-	frappe.msgprint(f"{output}")
+	# frappe.msgprint(f"{output}")
 	return [output]
 
 # @frappe.read_only()
@@ -244,6 +245,8 @@ def write_to_db(sql):
 	
 @frappe.whitelist()
 def get_reports(payroll_entry):
+	flatten_salary_slips(payroll_entry)
+	# frappe.msgprint("Disaggregated totals...")
 	net_pay = get_net_pay_totals(payroll_entry)
 	#core_banking.core_banking.report.company_totals.company_totals.get_reports
 	args = get_run_reports(payroll_entry)
@@ -270,12 +273,21 @@ def get_reports(payroll_entry):
 	print(sql)
 	write_to_db(sql)
 	return args
+def flatten_salary_slips(payroll_entry):
+	# payroll_entry = "08-2022 PAYROLL.-102"
+	count = 0
+	for slip in frappe.get_all(
+		"Salary Slip", filters=dict(payroll_entry=payroll_entry), fields=["*"]
+	):
+		count += 1
+		flatten_this_slip(payroll_entry=payroll_entry, slip=slip, count=count)
 @frappe.whitelist()
 def payroll_gl_accrual(payroll_entry):
 	net_pay = get_net_pay_totals(payroll_entry)
 	args = get_run_reports(payroll_entry)
 	deductions = args.get('deductions')
 	return args
+
 def generate():
 	sql = f"SELECT DISTINCT `payroll_entry` from `tabSalary Slip` where docstatus=0"
 	unsubmitted_slips = frappe.db.sql(sql, as_dict=True)

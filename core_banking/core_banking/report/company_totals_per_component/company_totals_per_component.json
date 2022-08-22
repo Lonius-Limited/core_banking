@@ -1,0 +1,41 @@
+{
+ "add_total_row": 1,
+ "columns": [],
+ "creation": "2022-08-22 00:58:43.907292",
+ "disable_prepared_report": 1,
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [
+  {
+   "fieldname": "payroll_entry",
+   "fieldtype": "Link",
+   "label": "Payroll Entry",
+   "mandatory": 0,
+   "options": "Payroll Entry",
+   "wildcard_filter": 0
+  },
+  {
+   "fieldname": "salary_component",
+   "fieldtype": "Link",
+   "label": "Salary Component",
+   "mandatory": 0,
+   "options": "Salary Component",
+   "wildcard_filter": 0
+  }
+ ],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": "MTRH Default",
+ "modified": "2022-08-22 01:14:32.664836",
+ "modified_by": "Administrator",
+ "module": "Core Banking",
+ "name": "Company totals per Component",
+ "owner": "Administrator",
+ "prepared_report": 1,
+ "query": "select slip.employee, slip.employee_name, detail.salary_component, detail.amount from `tabSalary Detail` detail INNER JOIN  `tabSalary Slip` slip on slip.name = detail.parent where slip.payroll_entry = 'HR-PRUN-2021-00002';",
+ "ref_doctype": "Salary Slip",
+ "report_name": "Company totals per Component",
+ "report_type": "Script Report",
+ "roles": []
+}
