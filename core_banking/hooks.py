@@ -14,8 +14,13 @@ app_license = "MIT"
 
 # include js, css files in header of desk.html
 app_include_css = ["/assets/core_banking/css/custom_table.css"]
-app_include_js = ["/assets/core_banking/js/custom_scripts/member.js","/assets/core_banking/js/custom_scripts/payment_entry.js",
-"/assets/core_banking/js/custom_scripts/pension_contributions_upload.js","/assets/core_banking/js/custom_scripts/payroll_entry.js"]
+app_include_js = [
+    "/assets/core_banking/js/custom_scripts/member.js",
+    "/assets/core_banking/js/custom_scripts/payment_entry.js",
+    "/assets/core_banking/js/custom_scripts/additional_salary.js",
+    "/assets/core_banking/js/custom_scripts/pension_contributions_upload.js",
+    "/assets/core_banking/js/custom_scripts/payroll_entry.js",
+]
 
 # include js, css files in header of web template
 # web_include_css = "/assets/core_banking/css/core_banking.css"
@@ -46,7 +51,7 @@ app_include_js = ["/assets/core_banking/js/custom_scripts/member.js","/assets/co
 
 # website user home page (by Role)
 # role_home_page = {
-#	"Role": "home_page"
+# 	"Role": "home_page"
 # }
 
 # Generators
@@ -96,30 +101,37 @@ app_include_js = ["/assets/core_banking/js/custom_scripts/member.js","/assets/co
 # Document Events
 # ---------------
 # Hook on document methods and events
-fixtures =[dict(dt="Report", filters=dict(module="Core Banking")),dict(dt="Print Format", filters=dict(name="Company Totals"))]
+fixtures = [
+    dict(dt="Report", filters=dict(module="Core Banking")),
+    dict(dt="Print Format", filters=dict(name="Company Totals")),
+]
 doc_events = {
-	"Member": {
-		"after_insert": "core_banking.api.member.make_member_customer",
-		"before_save": ["core_banking.api.member.set_date_of_retirement",
-						"core_banking.api.member.validate_percentages",
-						"core_banking.api.member.validate_transfers_in"],
-		# "on_trash": "method"
-	},
-	"Pension Contributions Upload":{
-		"before_save":"core_banking.api.member.populate_upload",
-		"before_submit":"core_banking.api.member.post_pension_schedule_hook"
-	},
-	"Salary Slip":{
-		"before_save":["core_banking.core_banking_payroll.salary_slip.salary_slip_save"],
-		"on_submit":["core_banking.api.payroll_entry.override_salary_slip_submit"],
-		"before_submit":["core_banking.api.payroll_entry.override_salary_slip_submit"]
-		
-	},
-	"Payroll Entry":{
-		"before_save":["core_banking.api.payroll_entry.set_title_field"],
-		"on_update_after_submit":["core_banking.api.payroll_entry.process_approved_payrolls"]
-		
-	}
+    "Member": {
+        "after_insert": "core_banking.api.member.make_member_customer",
+        "before_save": [
+            "core_banking.api.member.set_date_of_retirement",
+            "core_banking.api.member.validate_percentages",
+            "core_banking.api.member.validate_transfers_in",
+        ],
+        # "on_trash": "method"
+    },
+    "Pension Contributions Upload": {
+        "before_save": "core_banking.api.member.populate_upload",
+        "before_submit": "core_banking.api.member.post_pension_schedule_hook",
+    },
+    "Salary Slip": {
+        "before_save": [
+            "core_banking.core_banking_payroll.salary_slip.salary_slip_save"
+        ],
+        "on_submit": ["core_banking.api.payroll_entry.override_salary_slip_submit"],
+        "before_submit": ["core_banking.api.payroll_entry.override_salary_slip_submit"],
+    },
+    "Payroll Entry": {
+        "before_save": ["core_banking.api.payroll_entry.set_title_field"],
+        "on_update_after_submit": [
+            "core_banking.api.payroll_entry.process_approved_payrolls"
+        ],
+    },
 }
 
 # Scheduled Tasks
@@ -171,24 +183,22 @@ doc_events = {
 # --------------------
 
 user_data_fields = [
-	{
-		"doctype": "{doctype_1}",
-		"filter_by": "{filter_by}",
-		"redact_fields": ["{field_1}", "{field_2}"],
-		"partial": 1,
-	},
-	{
-		"doctype": "{doctype_2}",
-		"filter_by": "{filter_by}",
-		"partial": 1,
-	},
-	{
-		"doctype": "{doctype_3}",
-		"strict": False,
-	},
-	{
-		"doctype": "{doctype_4}"
-	}
+    {
+        "doctype": "{doctype_1}",
+        "filter_by": "{filter_by}",
+        "redact_fields": ["{field_1}", "{field_2}"],
+        "partial": 1,
+    },
+    {
+        "doctype": "{doctype_2}",
+        "filter_by": "{filter_by}",
+        "partial": 1,
+    },
+    {
+        "doctype": "{doctype_3}",
+        "strict": False,
+    },
+    {"doctype": "{doctype_4}"},
 ]
 
 # Authentication and authorization
