@@ -309,7 +309,7 @@ def get_relief_accounts(journal_entry, payroll_entry):
 	expense_obj = {
 		"account": default_salary_component_expense,
 		"value": total,
-		"debit_in_account_currency": flt(amt, precision),
+		"debit_in_account_currency": flt(total, precision),
 		"exchange_rate": flt(1),
 		"cost_center": payroll_entry.cost_center,
 		"project": payroll_entry.project,

@@ -13,7 +13,8 @@ app_license = "MIT"
 # ------------------
 
 # include js, css files in header of desk.html
-app_include_css = ["/assets/core_banking/css/custom_table.css"]
+app_include_css = ["/assets/core_banking/css/custom_table.css",
+"/assets/core_banking/css/pos-custom.css"]
 app_include_js = [
     "/assets/core_banking/js/custom_scripts/member.js",
     "/assets/core_banking/js/custom_scripts/payment_entry.js",
