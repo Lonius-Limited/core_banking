@@ -182,7 +182,7 @@ doc_events = {
 #
 # auto_cancel_exempted_doctypes = ["Auto Repeat"]
 
-
+after_migrate =["core_banking.api.scheduled_jobs.execute"]
 # User Data Protection
 # --------------------
 

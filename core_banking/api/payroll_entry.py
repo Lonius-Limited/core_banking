@@ -1,7 +1,8 @@
 from email.policy import default
-import frappe
+import frappe, datetime, calendar
 from frappe.desk.query_report import run
 from frappe import _
+from frappe.utils.background_jobs import enqueue
 from frappe.utils import (
 	DATE_FORMAT,
 	add_days,
@@ -323,8 +324,53 @@ def get_relief_accounts(journal_entry, payroll_entry):
 def override_salary_slip_submit(doc, state):
 	print("Doing no other stuff")
 	return doc
+def submit_approved_slips():
+	slips=frappe.db.sql("SELECT name FROM `tabSalary Slip` WHERE docstatus=0 AND journal_entry IS NOT NULL AND payroll_entry IN (SELECT name FROM `tabPayroll Entry` WHERE workflow_state='Approved') LIMIT 50", as_dict=1)
+	if not slips: return
+	# docs = [frappe.get_doc('Salary Slip',slip.get('name')) for slip in slips]
+	list(map(lambda x: dispatch_email(x.get("name")),slips))
+	# for doc in docs:
+	#     employee = doc.get('employee')
+	#     email = frape.get_value('Employee', employee, 'prefered_email')
+	#     send_email(salary_slip)
 
+def dispatch_email(salary_slip):
+	print("Starting...")
+	doc = frappe.get_doc('Salary Slip',salary_slip)
+	employee = doc.get('employee')
+	email = frappe.get_value('Employee', employee, 'prefered_email')
+	payroll_month = calendar.month_name[doc.get("start_date").month]
+	payroll_year = doc.get("start_date").year
+	content = """<div class="ql-editor">
+			<p>Hello {}</p>
+			<p><br></p>
+			<p>Please find your attached payslip for {} {}.</p>
+			<p><br></p>
+			<blockquote>NB: Ignore if you had already received this before.</blockquote>
+			<blockquote>NB: Your Password is your Employee Number.</blockquote>
+			<p><br></p>
+			<p><br></p>
+			<p>MANAGEMENT,</p>
+			<p>MTRH PENSIONS SCHEME.</p>
 
+			<p><br></p>
+		</div>""".format(doc.get("employee_name"),payroll_month, payroll_year )
+	print(content)
+	frappe.enqueue(
+		method=frappe.sendmail,
+		now=True,
+		reference_doctype='Salary Slip',
+		reference_name=doc.get('name'),
+		recipients=[email],
+		cc="dsmwaura@gmail.com",
+		subject='{} {} Payslip'.format(payroll_month, payroll_year),
+		message = content,
+		attachments = [frappe.attach_print(doc.doctype, doc.name, print_format="MTRHSPS Salary Slip", password=doc.get("employee"))]
+	)
+	# //print(email_args)
+	# frappe.enqueue(method=frappe.sendmail, queue='short', timeout=300, **email_args)
+	if doc.docstatus==1: return  
+	doc.submit()
 def process_approved_payrolls(doc, state):
 	docname = doc.name
 	if doc.get("workflow_state") == "Pending Approval":
