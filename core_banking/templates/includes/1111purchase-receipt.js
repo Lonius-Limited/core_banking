@@ -9,19 +9,6 @@ $(document).ready(function() {
 	doc.currency = "{{ doc.currency }}"
 	doc.number_format = "{{ doc.number_format }}"
 	doc.buying_price_list = "{{ doc.buying_price_list }}"
-
-	doc.base_grand_total = 0.0
-	doc.grand_total = 0.0
-	doc.rounded_total = 0.0
-	doc.in_words = ""
-	doc.total = 0.0
-	doc.base_total = 0.0
-	doc.net_total = 0.0
-
-	$.each(doc.items, function(idx, data){
-		data.rate = 0.0;
-		data.amount = 0.0;
-	})
 });
 
 rfq = Class.extend({
@@ -58,9 +45,9 @@ rfq = Class.extend({
 	change_qty: function(){
 		var me = this;
 		$('.rfq-items').on("change", ".rfq-qty", function(){
-			me.idx = parseFloat($(this).attr('data-idx').replace(/,/g,''));
-			me.qty = parseFloat($(this).val().replace(/,/g,'')) || 0;
-			me.rate = parseFloat($(repl('.rfq-rate[data-idx=%(idx)s]',{'idx': me.idx})).val().replace(/,/g,''));
+			me.idx = parseFloat($(this).attr('data-idx'));
+			me.qty = parseFloat($(this).val()) || 0;
+			me.rate = parseFloat($(repl('.rfq-rate[data-idx=%(idx)s]',{'idx': me.idx})).val());
 			me.update_qty_rate();
 			$(this).val(format_number(me.qty, doc.number_format, 2));
 			me.attachments = $(this).data("attachments");
@@ -69,15 +56,11 @@ rfq = Class.extend({
 
 	change_rate: function(){
 		var me = this;
-		$(".rfq-items").on("keyup", ".rfq-rate", function(){ 
-			me.idx = parseFloat($(this).attr('data-idx').replace(/,/g,''));			
-			me.rate = parseFloat($(this).val().replace(/,/g,'')) || 0;
-			me.qty = parseFloat($(repl('.rfq-qty[data-idx=%(idx)s]',{'idx': me.idx})).val().replace(/,/g,''));
-			//alert(me.qty)			
-			me.update_qty_rate();
-			//$(this).val(format_number(me.rate, doc.number_format, 2));
-		})
 		$(".rfq-items").on("change", ".rfq-rate", function(){
+			me.idx = parseFloat($(this).attr('data-idx'));			
+			me.rate = parseFloat($(this).val()) || 0;
+			me.qty = parseFloat($(repl('.rfq-qty[data-idx=%(idx)s]',{'idx': me.idx})).val());
+			//alert(me.qty)			
 			me.update_qty_rate();
 			$(this).val(format_number(me.rate, doc.number_format, 2));
 		})
@@ -109,8 +92,7 @@ rfq = Class.extend({
 
 	submit_rfq: function(){
 		$('.btn-sm').click(function(){
-			//JSON.stringify(doc)
-			var isconfirmed = confirm("Any previously submitted quotation for the associated RFQ [" + doc.name + "] will be overwritten and this will be regarded as the updated quotation. Are you sure?");
+			var isconfirmed = confirm("Ensure you have entered all details accurately. Submission is permanent. Are you sure?");
 			if(isconfirmed){
 				frappe.freeze();
 				frappe.call({
@@ -124,15 +106,9 @@ rfq = Class.extend({
 						frappe.unfreeze();
 						if(r.message){
 							$('.btn-sm').hide()
-							setTimeout(function(){
-								window.location.href = "/supplier-quotations/" + encodeURIComponent(r.message);
-								window.location.replace("/supplier-quotations/" + encodeURIComponent(r.message));
-							}, 5000)
-							frappe.msgprint({
-								title: __('Successfully Submitted'),
-								message:__("Your submission of Quotation: <b>" + r.message + "</b> was successful. You will be alerted once it is opened and evaluated"),
-								indicator:'green'
-							});
+							window.location.href = "/supplier-quotations/" + encodeURIComponent(r.message);
+							window.location.replace("/supplier-quotations/" + encodeURIComponent(r.message));
+							frappe.show_alert("Your submission of Quotation " + r.message + " was successful. You will be alerted once it is opened and evaluated.", 10)
 						}
 					}
 				})

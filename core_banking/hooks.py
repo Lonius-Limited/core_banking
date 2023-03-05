@@ -25,15 +25,7 @@ app_include_js = [
 ]
 
 
-website_route_rules=[
-    {"from_route": "/rfq", "to_route": "Request for Quotation"},
-	{"from_route": "/rfq/<path:name>", "to_route": "rfq",
-		"defaults": {
-			"doctype": "Request for Quotation",
-			"parents": [{"label": _("Request for Quotation"), "route": "rfq"}]
-		}
-	},
-]
+
 # include js, css files in header of web template
 # web_include_css = "/assets/core_banking/css/core_banking.css"
 # web_include_js = "/assets/core_banking/js/core_banking.js"

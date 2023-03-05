@@ -1,17 +1,15 @@
-{% from "templates/includes/rfq/rfq_macros.html" import item_name_and_description %}
+{% from "mtrh_dev/templates/includes/rfq/rfq_macros.html" import item_name_and_description %}
 
 {% for d in doc.items %}
 <div class="rfq-item">
 	<div class="row">
-		<div class="col-sm-5 col-12" style="margin-bottom: 10px;margin-top: 5px;">
+		<div class="col-sm-6 col-12" style="margin-bottom: 10px;margin-top: 5px;">
 			{{ item_name_and_description(d, doc) }}
 		</div>
 		<!-- <div class="col-sm-2 col-2" style="margin-bottom: 10px;">
 			<textarea type="text" style="margin-top: 5px;" class="input-with-feedback form-control rfq-offer_detail" ></textarea>
 		</div> -->
-		
-		<div class="col-sm-2 col-4 text-right">
-		
+		<div class="col-sm-2 col-3 text-right">
 				<input readonly type="text" class="form-control text-right rfq-qty" style="margin-top: 5px;display: inline-block"
 				value = "{{ d.get_formatted('qty') }}"
 				data-idx="{{ d.idx }}">
@@ -19,14 +17,110 @@
 					{{_("UOM") + ":"+ d.uom}}
 				</p>
 		</div>
-		<div class="col-sm-2 col-4 text-right">
+		<div class="col-sm-2 col-3 text-right">
 			<input type="text" class="form-control text-right rfq-rate"
-				style="margin-top: 5px;display: inline-block" value="0.00"
+				style="margin-top: 5px;display: inline-block" onkeyup = "this.onchange();" value="0.00"
 				data-idx="{{ d.idx }}">
+				<p class="text-muted small" style="margin-top: 10px;">
+					{{_("0:00 = No Quote") }}
+				</p>
 		</div>
-        <div class="col-sm-3 col-4 text-right" style="padding-top: 9px;">
+        <div class="col-sm-2 col-3 text-right" style="padding-top: 9px;">
            {{doc.currency_symbol}} <span class="rfq-amount" data-idx="{{ d.idx }}">0.00</span>
         </div>
-		</div>
 	</div>
+	<div class="row">
+		
+			<form id="frmFileUp">
+				<label for="select_files-{{d.idx}}">Combined PDF document for {{d.item_name}}:</label>
+				<input class="btn btn-primary" type="file" data-theid="{{d.idx}}" data-thedocname="{{d.parent}}"  id="select_files-{{d.idx}}" >
+			</form>
+		
+		<!--<div class="col-2 text-right">
+			<button class="btn btn-primary rfq-attach-{{d.idx}}" data-idx="{{ d.idx }}" id="btn_upload" data-theid="{{d.idx}}" data-thedocname="{{d.parent}}" >Upload</button>
+			<input hidden id="attach-{{d.idx}}" type="text" class="form-control text-right rfq-attachments" style="margin-top: 5px;display: inline-block"
+				value = "{{ d.idx }}" 
+				data-idx="{{ d.idx }}"> 
+		</div>-->
+	</div>
+</div>	
 {% endfor %}
+
+<script type="text/javascript">
+
+  frappe.ready(function() {
+    var $form = $("form[id='frmFileUp']");
+
+    $form.on("change", "[type='file']", function() {
+		var $input = $(this);
+		var theID = $(this).data("theid");
+		var doc_name = $(this).data("thedocname"); 
+		var input = $input.get(0);
+		if(input.files.length) {
+			input.filedata = { "files_data" : [] }; //Initialize as json array.
+			window.file_reading = true;
+			$.each(input.files, function(key, value) {
+				setupReader(value, input, $form, theID, doc_name);
+			});
+			window.file_reading = false;
+			
+			//change upload button properties
+			$(".rfq-attach-" + theID).removeClass("btn-success");
+			$(".rfq-attach-" + theID).addClass("btn-primary");
+			$(".rfq-attach-" + theID).prop("value", "Upload");
+			$(".rfq-attach-" + theID).prop('disabled', false);
+		}
+		//alert(input)
+		window.setTimeout(function() {
+			//var filedata = $('#select_files-' + theID).prop('filedata'); //$input.prop('filedata'); // 
+			//frappe.msgprint(__("This DOC: " + filedata));
+			var timestamp = new Date().getUTCMilliseconds();
+
+			frappe.call({
+				method: "mtrh_dev.mtrh_dev.utilities.attach_file_to_doc",
+				args: {"filedata": input.filedata, "doc_type": "Request for Quotation", "doc_name": doc_name, "file_name": timestamp + ".pdf"},
+				freeze: true,
+				freeze_message: __("Upload files..."),
+				callback: function(r){
+					if(!r.exc) {
+						//frappe.msgprint(__("Files uploaded"));
+						$('#attach-' + theID).val("<a href='" + r.message + "'>Product File</a>").change();
+						$(".rfq-attach-" + theID).removeClass("btn-primary");
+						$(".rfq-attach-" + theID).addClass("btn-success");
+						$(".rfq-attach-" + theID).prop("value", "Document Uploaded");
+						$(".rfq-attach-" + theID).prop('disabled', true);
+					} else {
+						frappe.msgprint(__("Files not uploaded. <br /> " + r.exc));
+					}
+				}
+			});
+		}, 3000);
+    });
+
+    $("#btn_upload").click(function() {
+		//alert("we are here")
+		//var projname = $('#projname').val();
+		var theID = $(this).data("theid");
+		var doc_name = $(this).data("thedocname");
+		//frappe.msgprint(__("This DOC: " + doc_name));
+		
+    });
+  });
+
+  function setupReader(file, input, theform, theID, doc_name) {
+		var name = file.name;
+		var reader = new FileReader();  
+		reader.onload = function(e) {
+			input.filedata.files_data.push({
+				"__file_attachment": 1,
+				"filename": file.name,
+				"dataurl": reader.result
+			})
+		}
+		reader.readAsDataURL(file);
+		//$('#select_files-' + theID).val(newFileName);
+		//theform.append('select_files-1', file, newFileName);
+		
+		
+  }
+</script>

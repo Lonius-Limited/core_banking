@@ -1,7 +1,7 @@
 {% extends "templates/web.html" %}
 
 {% block header %}
-<h1>{{ doc.name }}</h1>
+<h2>{{ doc.name }}</h2>
 {% endblock %}
 
 {% block script %}
@@ -13,10 +13,21 @@
 {% endblock %}
 
 {% block header_actions %}
-{% if doc.items %}
+{% if frappe.utils.time_diff_in_seconds(frappe.utils.now(), doc.transaction_date) <= 0 %}
+{% if doc.items and doc.rfq_links %}
+<label class="btn btn-success btn-sm">
+	{{ _("Submitted") }}</label>
+<button class="btn btn-primary btn-sm"
+    type="button">
+    {{ _("Re-Submit") }}</button>
+{% else %}
 <button class="btn btn-primary btn-sm"
     type="button">
     {{ _("Submit") }}</button>
+{% endif %}
+{% else %}
+	<label class="btn btn-danger ">
+    {{ _("Overdue") }}</label>
 {% endif %}
 {% endblock %}
 
@@ -26,23 +37,23 @@
         <div class="rfq-supplier">{{ doc.supplier }}</div>
 	</div>
     <div class="col-6 text-muted text-right h6">
-        {{ doc.get_formatted("transaction_date") }}
+        OPENING DATE: {{ doc.get_formatted("transaction_date") }}
     </div>
 </div>
 <div class="rfq-content" style="margin-top:15px">
 	<div id="order-container">
 			<div id="rfq-items">
 				<div class="row cart-item-header">
-					<div class="col-sm-5 col-12">
+					<div class="col-sm-6 col-6">
 						{{ _("Items") }}
 					</div>
-					<div class="col-sm-2 col-4 text-right">
-						{{ _("Qty- D") }}
+					<div class="col-sm-2 col-2 text-right">
+						{{ _("Qty") }}
 					</div>
-					<div class="col-sm-2 col-4 text-right">
+					<div class="col-sm-2 col-3 text-right">
 						{{ _("Rate") }}
 					</div>
-					<div class="col-sm-3 col-4 text-right">
+					<div class="col-sm-2 col-3 text-right">
 						{{ _("Amount") }}
 					</div>
 				</div>
@@ -60,7 +71,8 @@
 			{{doc.currency_symbol}}  <span class="tax-grand-total">0.0</span>
 			</div>
 		</div>
-        {% endif %}
+		{% endif %}
+		<p >{{ _("<b><u>PLEASE NOTE: All your quoted prices should be INCLUSIVE OF ALL TAXES.</u></b>") }}</p>
 		<div class="row terms">
 			<div class="col-6">
 				<br><br>
@@ -70,20 +82,20 @@
 		</div>
 		<div class="row mt-5">
 			<div class="col-12">
-				<p class="text-muted small">{{ _("Quotations: ") }}</p>
+				<p class="text-muted small">{{ _("Submitted Quotations: ") }}</p>
 				{% if doc.rfq_links %}
 					<div class="result">
 						{% for d in doc.rfq_links %}
-							<div class="web-list-item transaction-list-item quotations" idx="{{d.name}}">
+							<div class="web-list-item transaction-list-item supplier-quotations" idx="{{d.name}}">
 								<div class="row">
 									<div class="col-sm-6">
-										<span class="indicator gray">{{d.name}}</span>
+										<span class="indicator darkgrey">{{d.name}}</span>
 									</div>
 									<div class="col-sm-3">
-										<span class="small gray">{{d.status}}</span>
+										<span class="small darkgrey">{{d.status}}</span>
 									</div>
 									<div class="col-sm-3">
-										<span class="small gray">{{d.transaction_date}}</span>
+										<span class="small darkgrey">{{d.transaction_date}}</span>
 									</div>
 								</div>
 								<a class="transaction-item-link" href="/supplier-quotations/{{d.name}}">Link</a>
@@ -95,4 +107,6 @@
 		</div>
     </div>
 </div>
+
+
 {% endblock %}

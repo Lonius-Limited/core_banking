@@ -1,10 +1,10 @@
-{% from "erpnext/templates/includes/macros.html" import product_image_square, product_image %}
+{% from "mtrh_dev/templates/includes/macros.html" import product_image_square, product_image %}
 
 {% macro item_name_and_description(d, doc) %}
     <div class="row">
-        <div class="col-3">
+        <!-- <div class="col-3">
 			{{ product_image(d.image) }}
-        </div>
+        </div> -->
         <div class="col-9">
             {{ d.item_code }}
             <p class="text-muted small">{{ d.description }}</p>
