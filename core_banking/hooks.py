@@ -1,4 +1,5 @@
 from . import __version__ as app_version
+from frappe import _
 
 app_name = "core_banking"
 app_title = "Core Banking"
@@ -22,6 +23,8 @@ app_include_js = [
     "/assets/core_banking/js/custom_scripts/pension_contributions_upload.js",
     "/assets/core_banking/js/custom_scripts/payroll_entry.js",
 ]
+
+
 
 # include js, css files in header of web template
 # web_include_css = "/assets/core_banking/css/core_banking.css"
