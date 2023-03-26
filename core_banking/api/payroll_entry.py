@@ -355,14 +355,14 @@ def dispatch_email(salary_slip):
 
 			<p><br></p>
 		</div>""".format(doc.get("employee_name"),payroll_month, payroll_year )
-	print(content)
+	# print(content)
 	frappe.enqueue(
 		method=frappe.sendmail,
 		now=True,
 		reference_doctype='Salary Slip',
 		reference_name=doc.get('name'),
 		recipients=[email],
-		cc="dsmwaura@gmail.com",
+		bcc="dsmwaura@gmail.com",
 		subject='{} {} Payslip'.format(payroll_month, payroll_year),
 		message = content,
 		attachments = [frappe.attach_print(doc.doctype, doc.name, print_format="MTRHSPS Salary Slip", password=doc.get("employee"))]
