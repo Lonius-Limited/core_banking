@@ -22,6 +22,8 @@ app_include_js = [
     "/assets/core_banking/js/custom_scripts/additional_salary.js",
     "/assets/core_banking/js/custom_scripts/pension_contributions_upload.js",
     "/assets/core_banking/js/custom_scripts/payroll_entry.js",
+   
+
 ]
 
 
@@ -113,9 +115,9 @@ doc_events = {
     "Member": {
         "after_insert": "core_banking.api.member.make_member_customer",
         "before_save": [
-            "core_banking.api.member.set_date_of_retirement",
-            "core_banking.api.member.validate_percentages",
-            "core_banking.api.member.validate_transfers_in",
+            # "core_banking.api.member.set_date_of_retirement",
+            # "core_banking.api.member.validate_percentages",
+            # "core_banking.api.member.validate_transfers_in",
         ],
         # "on_trash": "method"
     },
