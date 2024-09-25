@@ -1,0 +1,279 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-09-25 18:40:56.400737",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "general_settings_tab",
+  "africastalking_settings_section",
+  "africastalking_sms_api",
+  "africastalking_username",
+  "column_break_3laye",
+  "africastalking_sender_id",
+  "use_sms_settings",
+  "safaricom_validation_settings_section",
+  "token_url",
+  "token_username",
+  "token_password",
+  "column_break_9lovs",
+  "current_token",
+  "validate_url",
+  "validate_shortcode",
+  "token_provider_url",
+  "jwt_security",
+  "security_hash",
+  "automatically_create_client_from_nrb",
+  "blacklisted_fields_section",
+  "un_mask_data_on_registration",
+  "nrb_settings_tab",
+  "data_access_section",
+  "registration_sms_template",
+  "column_break_bdao",
+  "enforce_gender_check_on_nrb",
+  "hie_url",
+  "hie_username",
+  "hie_password",
+  "wallet_settings_section",
+  "wallet_url",
+  "wallet_bearer_token",
+  "test_msisdn",
+  "system_settings_tab",
+  "maximum_attempts",
+  "lock_timeout_period",
+  "return_encrypted_dictionaries"
+ ],
+ "fields": [
+  {
+   "fieldname": "general_settings_tab",
+   "fieldtype": "Tab Break",
+   "label": "General Settings"
+  },
+  {
+   "columns": 2,
+   "fieldname": "africastalking_settings_section",
+   "fieldtype": "Section Break",
+   "label": "AfricasTalking Settings"
+  },
+  {
+   "fieldname": "africastalking_sms_api",
+   "fieldtype": "Data",
+   "label": "AfricasTalking SMS API"
+  },
+  {
+   "fieldname": "africastalking_username",
+   "fieldtype": "Data",
+   "label": "AfricasTalking Username"
+  },
+  {
+   "fieldname": "column_break_3laye",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "africastalking_sender_id",
+   "fieldtype": "Data",
+   "label": "AfricasTalking Sender ID"
+  },
+  {
+   "default": "0",
+   "fieldname": "use_sms_settings",
+   "fieldtype": "Check",
+   "label": "Use SMS Settings"
+  },
+  {
+   "fieldname": "safaricom_validation_settings_section",
+   "fieldtype": "Section Break",
+   "label": "Safaricom KYC Validation Settings"
+  },
+  {
+   "fieldname": "token_url",
+   "fieldtype": "Data",
+   "label": "Token URL"
+  },
+  {
+   "fieldname": "token_username",
+   "fieldtype": "Data",
+   "label": "Token Username"
+  },
+  {
+   "fieldname": "token_password",
+   "fieldtype": "Password",
+   "label": "Token Password"
+  },
+  {
+   "fieldname": "column_break_9lovs",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "current_token",
+   "fieldtype": "Text",
+   "label": "Current Token",
+   "read_only": 1
+  },
+  {
+   "fieldname": "validate_url",
+   "fieldtype": "Data",
+   "label": "Validate URL"
+  },
+  {
+   "fieldname": "validate_shortcode",
+   "fieldtype": "Data",
+   "label": "Validate ShortCode"
+  },
+  {
+   "description": "Another CR that exposes the current token",
+   "fieldname": "token_provider_url",
+   "fieldtype": "Data",
+   "label": "Token Provider URL"
+  },
+  {
+   "fieldname": "jwt_security",
+   "fieldtype": "Section Break",
+   "label": "JWT Security"
+  },
+  {
+   "fieldname": "security_hash",
+   "fieldtype": "Data",
+   "label": "Security Hash"
+  },
+  {
+   "default": "1",
+   "description": "If checked it creates a payload from NRB database.",
+   "fieldname": "automatically_create_client_from_nrb",
+   "fieldtype": "Check",
+   "label": "Automatically Create Client From NRB"
+  },
+  {
+   "description": "These fields cannot be edited in the client registry.",
+   "fieldname": "blacklisted_fields_section",
+   "fieldtype": "Section Break",
+   "label": "Blacklisted Fields Section"
+  },
+  {
+   "default": "0",
+   "fieldname": "un_mask_data_on_registration",
+   "fieldtype": "Check",
+   "label": "Unmask Data On Registration"
+  },
+  {
+   "fieldname": "nrb_settings_tab",
+   "fieldtype": "Tab Break",
+   "label": "HIE Settings"
+  },
+  {
+   "fieldname": "data_access_section",
+   "fieldtype": "Section Break",
+   "label": "Data Access"
+  },
+  {
+   "fieldname": "registration_sms_template",
+   "fieldtype": "Long Text",
+   "label": "Registration SMS Template"
+  },
+  {
+   "columns": 2,
+   "fieldname": "column_break_bdao",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "enforce_gender_check_on_nrb",
+   "fieldtype": "Check",
+   "label": "Enforce Gender Check on NRB"
+  },
+  {
+   "fieldname": "hie_url",
+   "fieldtype": "Data",
+   "label": "HIE URL"
+  },
+  {
+   "fieldname": "hie_username",
+   "fieldtype": "Data",
+   "label": "HIE Username"
+  },
+  {
+   "fieldname": "hie_password",
+   "fieldtype": "Password",
+   "label": "HIE Password"
+  },
+  {
+   "fieldname": "wallet_settings_section",
+   "fieldtype": "Section Break",
+   "label": "Wallet Settings"
+  },
+  {
+   "fieldname": "wallet_url",
+   "fieldtype": "Data",
+   "label": "Wallet URL"
+  },
+  {
+   "fieldname": "wallet_bearer_token",
+   "fieldtype": "Long Text",
+   "label": "Wallet Bearer Token"
+  },
+  {
+   "fieldname": "test_msisdn",
+   "fieldtype": "Data",
+   "label": "Test MSISDN"
+  },
+  {
+   "fieldname": "system_settings_tab",
+   "fieldtype": "Tab Break",
+   "label": "System Settings"
+  },
+  {
+   "default": "3",
+   "description": "Number of attempts in which the timeout will happen.",
+   "fieldname": "maximum_attempts",
+   "fieldtype": "Int",
+   "label": "Maximum Attempts"
+  },
+  {
+   "default": "60",
+   "description": "Time in minutes by which the number of attempt will led to locking of the account. A user will need to wait for this amount of time to retry.",
+   "fieldname": "lock_timeout_period",
+   "fieldtype": "Int",
+   "label": "Lock Timeout Period (Minutes)",
+   "non_negative": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "return_encrypted_dictionaries",
+   "fieldtype": "Check",
+   "label": "Return Encrypted Dictionaries"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2024-09-25 19:02:34.105571",
+ "modified_by": "Administrator",
+ "module": "Core Banking",
+ "name": "Core Banking Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Guest",
+   "share": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
