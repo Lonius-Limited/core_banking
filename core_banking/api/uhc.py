@@ -27,10 +27,10 @@ def member_statement(**kwargs):
         payload = json.loads(payload)
     payload.pop("cmd", None)
     _res = HIE().fetch_cr_by_identifiers(**payload)
-    if not _res.get("message") : return dict(eligible=0,reason="Client Records not found")
+    if not _res.get("message") : return dict(eligible=0,reason="Client Records for requested Identifiers were not found.", possible_solution="Client to Register for Social Health Authority using valid identifiers")
     client = _res.get("message")
     if client.get("total") < 1:
-        return  dict(eligible=0,reason="Client Records not found")
+        return dict(eligible=0,reason="Client Records for requested Identifiers were not found.", possible_solution="Client to Register for Social Health Authority using valid identifiers")
     _client_obj = client.get("result")[0]
     employment_type = _client_obj.get("employment_type")
     
@@ -60,7 +60,12 @@ def member_eligibility(household_id=None, employment_type=""):
         fields=["name as reference", "grand_total as amount_due" , "MONTHNAME(due_date) as month", "YEAR(due_date) as year", "due_date", "customer_group as household_id", "customer as member_id","status"],
         # page_length =
     )
-    if not invoices: return dict(eligible=0,reason="Invoice Records not found")
+    
+        
+    if not invoices:
+        if employment_type =="Employed":
+            return dict(eligible=0,reason="Employer by-product for this member not found.",possible_solution="Employer to submit by-product for Eligibility processing")
+        return dict(eligible=0,reason="SHA Premium Assessment records for this member not found", possible_solution="Member to complete profile and SHA assessment forms on Afyayangu.go.ke")
     
     customers = [x.get("name") for x in frappe.db.get_all("Customer", filters=dict(customer_group=household_id.get("identification_number")))]
     
