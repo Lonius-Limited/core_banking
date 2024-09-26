@@ -27,6 +27,7 @@ def member_statement(**kwargs):
         payload = json.loads(payload)
     payload.pop("cmd", None)
     _res = HIE().fetch_cr_by_identifiers(**payload)
+    if not _res.get("message") : return (dict(eligible=0,reason="Invoice Records not found"))
     client = _res.get("message")
     if client.get("total") < 0:
         return {}
