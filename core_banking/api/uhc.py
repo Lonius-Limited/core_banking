@@ -1,5 +1,5 @@
 import frappe, requests, json
-
+from datetime import datetime, timedelta
 
 class HIE:
     def __init__(self) -> None:
@@ -52,7 +52,8 @@ def member_eligibility(household_id=None):
             
         ),
         order_by ="due_date DESC",
-        fields=["name as reference", "grand_total as amount_due" , "MONTHNAME(due_date) as month", "YEAR(due_date) as year", "customer_group as household_id", "customer as member_id","status"]
+        fields=["name as reference", "grand_total as amount_due" , "MONTHNAME(due_date) as month", "YEAR(due_date) as year", "due_date", "customer_group as household_id", "customer as member_id","status"],
+        # page_length =
     )
     if not invoices: return dict(eligible=0,reason="Invoice Records not found")
     
@@ -65,6 +66,18 @@ def member_eligibility(household_id=None):
         # print(customer, _bal)
     eligible = 0
     if hh_balance <= 0 : eligible =1
-    return dict(unpaid=hh_balance, eligible=eligible, statement=invoices)
+    # eligible_to = ""
+    _payload = dict(unpaid=hh_balance, eligible=eligible, statement=invoices)
+    if eligible:
+        valid_customers = [x.get("member_id") for x in invoices]
+        filter_args = dict(party=["IN",valid_customers])
+        latest_payment = frappe.db.get_value("Payment Entry", filter_args,["posting_date as policy_start"], as_dict=1)
+        # year_later = datetime.t
+        _p_start = latest_payment.get("policy_start")
+        _p_end = _p_start + timedelta(days=365)
+        latest_payment["policy_start"] = str(_p_start)
+        
+        _payload ={**_payload, **latest_payment, "policy_end":str(_p_end)}
+    return _payload
     
     
