@@ -25,6 +25,7 @@ def member_statement(**kwargs):
     payload = kwargs
     if isinstance(payload, str):
         payload = json.loads(payload)
+    payload.pop("cmd", None)
     _res = HIE().fetch_cr_by_identifiers(**payload)
     client = _res.get("message")
     if client.get("total") < 0:
