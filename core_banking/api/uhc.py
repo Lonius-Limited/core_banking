@@ -27,10 +27,10 @@ def member_statement(**kwargs):
         payload = json.loads(payload)
     payload.pop("cmd", None)
     _res = HIE().fetch_cr_by_identifiers(**payload)
-    if not _res.get("message") : return dict(eligible=0,reason="Invoice Records not found")
+    if not _res.get("message") : return dict(eligible=0,reason="Client Records not found")
     client = _res.get("message")
-    if client.get("total") < 0:
-        return {}
+    if client.get("total") < 1:
+        return  dict(eligible=0,reason="Client Records not found")
     _client_obj = client.get("result")[0]
     hh = [
         x
@@ -74,7 +74,7 @@ def member_eligibility(household_id=None):
         latest_payment = frappe.db.get_value("Payment Entry", filter_args,["posting_date as policy_start"], as_dict=1)
         # year_later = datetime.t
         _p_start = latest_payment.get("policy_start")
-        _p_end = _p_start + timedelta(days=365)
+        _p_end = _p_start + timedelta(days=364)
         latest_payment["policy_start"] = str(_p_start)
         
         _payload ={**_payload, **latest_payment, "policy_end":str(_p_end)}
