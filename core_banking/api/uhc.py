@@ -32,6 +32,8 @@ def member_statement(**kwargs):
     if client.get("total") < 1:
         return  dict(eligible=0,reason="Client Records not found")
     _client_obj = client.get("result")[0]
+    employment_type = _client_obj.get("employment_type")
+    
     hh = [
         x
         for x in _client_obj.get("other_identifications")
@@ -39,12 +41,15 @@ def member_statement(**kwargs):
     ]
     if not hh:
         return {}
-    return member_eligibility(household_id=hh[0])
+    return member_eligibility(household_id=hh[0], employment_type=employment_type)
 
 
-def member_eligibility(household_id=None):
+def member_eligibility(household_id=None, employment_type=""):
     from erpnext.accounts.utils import get_balance_on
     # Fetch member eligibility by household ID
+    policy_period = 364
+    if employment_type == "Employed":
+        policy_period = 29
     invoices = frappe.db.get_all(
         "Sales Invoice",
         filters=dict(
@@ -74,7 +79,7 @@ def member_eligibility(household_id=None):
         latest_payment = frappe.db.get_value("Payment Entry", filter_args,["posting_date as policy_start"], as_dict=1)
         # year_later = datetime.t
         _p_start = latest_payment.get("policy_start")
-        _p_end = _p_start + timedelta(days=364)
+        _p_end = _p_start + timedelta(days=policy_period) #Will be replaced with relativeTimeDelta
         latest_payment["policy_start"] = str(_p_start)
         
         _payload ={**_payload, **latest_payment, "policy_end":str(_p_end)}
