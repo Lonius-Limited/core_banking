@@ -43,7 +43,7 @@ def member_statement(**kwargs):
     hh = [
         x
         for x in _client_obj.get("other_identifications")
-        if x.get("identification_type") == "Household ID"
+        if x.get("identification_type") == "Household Number"
     ]
     if not hh:
         return {}
@@ -52,7 +52,7 @@ def member_statement(**kwargs):
 
 def member_eligibility(household_id=None, employment_type=""):
     from erpnext.accounts.utils import get_balance_on
-    # Fetch member eligibility by household ID
+    # Fetch member eligibility by Household Number
     policy_period = 364
     if employment_type == "Employed":
         policy_period = 29
