@@ -17,7 +17,12 @@ class HIE:
             auth=(self.hie_user_name, self.hie_password),
         )
         return response.json()
-
+class Member:
+    def __init__(self) -> None:
+        pass
+    def fetch_member_by_cr_number():
+        # Return the same payload
+        pass
 
 @frappe.whitelist()
 # Pass Natural Identifiers
@@ -33,20 +38,21 @@ def member_statement(**kwargs):
         return dict(eligible=0,reason="Client Records for requested Identifiers were not found.", possible_solution="Client to Register for Social Health Authority using valid identifiers")
     _client_obj = client.get("result")[0]
     employment_type = _client_obj.get("employment_type")
+    full_name = "{} {}".format(_client_obj.get("first_name"),_client_obj.get("last_name"))
     
     hh = [
         x
         for x in _client_obj.get("other_identifications")
-        if x.get("identification_type") == "Household ID"
+        if x.get("identification_type") == "Household Number"
     ]
     if not hh:
         return {}
-    return member_eligibility(household_id=hh[0], employment_type=employment_type)
+    return {**member_eligibility(household_id=hh[0], employment_type=employment_type), "full_name":full_name}
 
 
 def member_eligibility(household_id=None, employment_type=""):
     from erpnext.accounts.utils import get_balance_on
-    # Fetch member eligibility by household ID
+    # Fetch member eligibility by Household Number
     policy_period = 364
     if employment_type == "Employed":
         policy_period = 29
@@ -57,7 +63,7 @@ def member_eligibility(household_id=None, employment_type=""):
             
         ),
         order_by ="due_date DESC",
-        fields=["name as reference", "grand_total as amount_due" , "MONTHNAME(due_date) as month", "YEAR(due_date) as year", "due_date", "customer_group as household_id", "customer as member_id","status"],
+        fields=["name as reference", "grand_total as amount_due" , "MONTHNAME(due_date) as month", "YEAR(due_date) as year",  "customer_group as household_id", "customer as member_id","status"],
         # page_length =
     )
     
