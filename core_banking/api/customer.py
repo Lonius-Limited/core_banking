@@ -25,7 +25,12 @@ def create_customer(**kwargs):
             return {
                 "status": False,
                 "message": f"Customer with CR Number {cr_number} already exists.",
-                "customer": cr_number
+            }
+        
+        if frappe.db.exists("Customer", {"identification_number": identification_number}):
+            return {
+                "status": False,
+                "message": f"Customer with ID Number {identification_number} already exists.",
             }
         
         # Check if customer group (household) exists, create if not
@@ -38,8 +43,9 @@ def create_customer(**kwargs):
         # Create customer
         customer = frappe.get_doc({
             "doctype": "Customer",
-            # "customer_full_name": customer_name,
-            "customer_name": cr_number,
+            "customer_name": identification_number,
+            "customer_full_names":customer_name,
+            "cr_number": cr_number,
             "customer_type": "Individual",
             "customer_group": household_number,
             "territory": "Kenya",
