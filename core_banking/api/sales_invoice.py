@@ -6,26 +6,40 @@ import traceback
 def create_sales_invoice(**kwargs):
     try:
         cr_number = kwargs.get('cr_number')
+        id_number = kwargs.get('id_number')
         amount = kwargs.get('amount')
-        identification_number = kwargs.get('id_number')
 
-        if not identification_number or not amount:
-            # frappe.throw("CR Number and Amount are required")
-            return {"status": False, "message": "Both ID number and Amount are required"}
+        missing_fields = []
+        if not (cr_number or id_number):
+            missing_fields.append("CR Number or ID Number")
+        if not amount:
+            missing_fields.append("Amount")
+
+        if missing_fields:
+            return {
+                "status": False, 
+                "message": f"The following field(s) are required: {', '.join(missing_fields)}"
+            }
 
         try:
             amount = flt(amount)
         except ValueError:
-            # frappe.throw("Invalid amount provided")
             return {"status": False, "message": "Invalid amount provided"}
 
-        if not frappe.db.exists("Customer", identification_number):
-            # frappe.throw(f"Customer with CR Number {cr_number} does not exist")
-            return {"status": False, "message": f"Customer with ID Number {identification_number} does not exist"}
+        # Get Customer
+        if id_number:
+            if not frappe.db.exists("Customer", id_number):
+                return {"status": False, "message": f"Customer with ID Number {id_number} does not exist"}
+            customer_name = id_number
+        else:
+            customer = frappe.get_list("Customer", filters={"cr_number": cr_number}, fields=["name"])
+            if not customer:
+                return {"status": False, "message": f"Customer with CR Number {cr_number} does not exist"}
+            customer_name = customer[0].name
 
         # Sales Invoice
         invoice = frappe.new_doc("Sales Invoice")
-        invoice.customer = identification_number
+        invoice.customer = customer_name
         invoice.date = today()
         invoice.posting_time = now_datetime().time()
         invoice.append("items", {
@@ -43,8 +57,8 @@ def create_sales_invoice(**kwargs):
         payment_entry.posting_date = today()
         payment_entry.mode_of_payment = "Cash"
         payment_entry.party_type = "Customer"
-        payment_entry.party = identification_number
-        payment_entry.party_name = identification_number
+        payment_entry.party = customer_name
+        payment_entry.party_name = customer_name
         payment_entry.paid_amount = amount
         payment_entry.received_amount = amount
         payment_entry.reference_no = invoice.name
@@ -85,6 +99,4 @@ def create_sales_invoice(**kwargs):
     except Exception as e:
         frappe.db.rollback()
         frappe.log_error(traceback.format_exc(), "Sales Invoice and Payment Creation Error")
-        # frappe.throw(traceback.format_exc())
         return {"status": False, "message": str(e), "traceback": traceback.format_exc()}
-    
