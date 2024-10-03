@@ -40,7 +40,7 @@ def create_customer(**kwargs):
             "doctype": "Customer",
             "customer_name": identification_number,
             "customer_full_names":customer_name,
-            "cr_number": cr_number,
+            # "cr_number": cr_number,
             "customer_type": "Individual",
             "customer_group": household_number,
             "territory": "Kenya",
