@@ -3,7 +3,7 @@ from frappe.utils import now_datetime, today, flt
 import traceback
 
 @frappe.whitelist()
-def create_sales_invoice(**kwargs):
+def post_payment_notification(**kwargs):
     try:
         cr_number = kwargs.get('cr_number')
         id_number = kwargs.get('id_number')
@@ -91,12 +91,11 @@ def create_sales_invoice(**kwargs):
 
         return {
             "status": True,
-            "message": "Sales Invoice created and paid successfully",
-            "invoice": invoice.name,
-            "payment_entry": payment_entry.name
+            "message": "Generated successfully",
+            "entry_ref": payment_entry.name
         }
 
     except Exception as e:
         frappe.db.rollback()
-        frappe.log_error(traceback.format_exc(), "Sales Invoice and Payment Creation Error")
+        frappe.log_error(traceback.format_exc(), "Entry Generation Error")
         return {"status": False, "message": str(e), "traceback": traceback.format_exc()}
