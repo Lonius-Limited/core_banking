@@ -135,7 +135,7 @@ def member_statement_v2(**kwargs):
         # "full_name",
         # "household_number",
         # "employment_type",
-        create_beneficiary(
+        enqueue_create_customer(
             **dict(
                 id=_client_obj.get("id"),
                 identification_number=identification_number,
