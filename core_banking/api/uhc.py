@@ -1,7 +1,7 @@
 import frappe, requests, json
 from datetime import datetime, timedelta
 from core_banking.api.customer import create_beneficiary
-
+from core_banking.api.eligibility_llm import UHCEligibilityStatement
 
 class HIE:
     def __init__(self) -> None:
@@ -159,6 +159,7 @@ def member_statement_v2(**kwargs):
         **member_eligibility(
             household_id=household_number, employment_type=employment_type
         ),
+        **UHCEligibilityStatement(identification_number=identification_number).nhif_eligibility(),
         "full_name": full_name,
     }
 
