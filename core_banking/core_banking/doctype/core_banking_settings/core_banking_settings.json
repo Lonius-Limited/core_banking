@@ -44,7 +44,9 @@
   "maximum_attempts",
   "lock_timeout_period",
   "return_encrypted_dictionaries",
-  "default_invoice_item"
+  "default_invoice_item",
+  "process_nhif_eligibility",
+  "nhif_transition_date"
  ],
  "fields": [
   {
@@ -250,12 +252,23 @@
    "fieldtype": "Link",
    "label": "Default Invoice Item",
    "options": "Item"
+  },
+  {
+   "fieldname": "nhif_transition_date",
+   "fieldtype": "Date",
+   "label": "NHIF Transition Date"
+  },
+  {
+   "default": "0",
+   "fieldname": "process_nhif_eligibility",
+   "fieldtype": "Check",
+   "label": "Process NHIF Eligibility?"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-10-03 21:20:38.571425",
+ "modified": "2024-10-04 08:44:19.375112",
  "modified_by": "Administrator",
  "module": "Core Banking",
  "name": "Core Banking Settings",

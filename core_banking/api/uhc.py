@@ -1,7 +1,7 @@
 import frappe, requests, json
 from datetime import datetime, timedelta
 from core_banking.api.customer import create_beneficiary
-
+from core_banking.api.eligibility_llm import UHCEligibilityStatement
 
 class HIE:
     def __init__(self) -> None:
@@ -135,7 +135,7 @@ def member_statement_v2(**kwargs):
         # "full_name",
         # "household_number",
         # "employment_type",
-        enqueue_create_customer(
+        enqueue_create_beneficiary(
             **dict(
                 id=_client_obj.get("id"),
                 identification_number=identification_number,
@@ -154,17 +154,19 @@ def member_statement_v2(**kwargs):
         )  # Backward compatibility
         employment_type = doc.get("custom_employment_status")
         full_name = doc.get("custom_customer_full_name")
-
     return {
         **member_eligibility(
             household_id=household_number, employment_type=employment_type
         ),
+        **UHCEligibilityStatement(identification_number=identification_number).nhif_eligibility(),
         "full_name": full_name,
     }
 
 
 def member_eligibility(household_id=None, employment_type=""):
     from erpnext.accounts.utils import get_balance_on
+    
+    #Declaration on EP
 
     # Fetch member eligibility by Household Number
     policy_period = 364
@@ -237,7 +239,7 @@ def member_eligibility(household_id=None, employment_type=""):
     return _payload
 
 
-def enqueue_create_customer(**kwargs):
+def enqueue_create_beneficiary(**kwargs):
     queue_args = kwargs
     print("Enqueueing with {}".format(queue_args))
     frappe.enqueue(
