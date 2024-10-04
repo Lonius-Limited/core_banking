@@ -154,7 +154,6 @@ def member_statement_v2(**kwargs):
         )  # Backward compatibility
         employment_type = doc.get("custom_employment_status")
         full_name = doc.get("custom_customer_full_name")
-
     return {
         **member_eligibility(
             household_id=household_number, employment_type=employment_type
@@ -166,6 +165,8 @@ def member_statement_v2(**kwargs):
 
 def member_eligibility(household_id=None, employment_type=""):
     from erpnext.accounts.utils import get_balance_on
+    
+    #Declaration on EP
 
     # Fetch member eligibility by Household Number
     policy_period = 364
