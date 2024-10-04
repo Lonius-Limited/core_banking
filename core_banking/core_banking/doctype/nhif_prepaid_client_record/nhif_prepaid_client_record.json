@@ -1,0 +1,82 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:id_no",
+ "creation": "2024-10-04 14:07:04.514861",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "full_name",
+  "nhif_no",
+  "id_no",
+  "column_break_nzvlz",
+  "cash_acc",
+  "total_amount",
+  "no_of_months"
+ ],
+ "fields": [
+  {
+   "fieldname": "nhif_no",
+   "fieldtype": "Data",
+   "label": "NHIF No"
+  },
+  {
+   "fieldname": "id_no",
+   "fieldtype": "Data",
+   "label": "ID No",
+   "unique": 1
+  },
+  {
+   "fieldname": "full_name",
+   "fieldtype": "Data",
+   "label": "Full Name"
+  },
+  {
+   "fieldname": "cash_acc",
+   "fieldtype": "Data",
+   "label": "Cash Acc"
+  },
+  {
+   "fieldname": "total_amount",
+   "fieldtype": "Data",
+   "label": "Total Amount"
+  },
+  {
+   "fieldname": "no_of_months",
+   "fieldtype": "Data",
+   "label": "No of Months"
+  },
+  {
+   "fieldname": "column_break_nzvlz",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-10-04 14:09:30.264114",
+ "modified_by": "Administrator",
+ "module": "Core Banking",
+ "name": "NHIF Prepaid Client Record",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
