@@ -135,7 +135,7 @@ def member_statement_v2(**kwargs):
         # "full_name",
         # "household_number",
         # "employment_type",
-        enqueue_create_customer(
+        enqueue_create_beneficiary(
             **dict(
                 id=_client_obj.get("id"),
                 identification_number=identification_number,
@@ -237,7 +237,7 @@ def member_eligibility(household_id=None, employment_type=""):
     return _payload
 
 
-def enqueue_create_customer(**kwargs):
+def enqueue_create_beneficiary(**kwargs):
     queue_args = kwargs
     print("Enqueueing with {}".format(queue_args))
     frappe.enqueue(
