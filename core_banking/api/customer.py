@@ -90,7 +90,7 @@ def create_beneficiary(**kwargs):
         customer_group = frappe.new_doc("Customer Group")
         customer_group.customer_group_name =  kwargs.get("household_number")
         customer_group.parent_customer_group = "All Customer Groups"
-        customer_group.insert()
+        customer_group.db_insert()
     # Begin transaction 
     customer_args = {
                 "doctype": "Customer",
