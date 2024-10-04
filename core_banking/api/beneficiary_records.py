@@ -9,6 +9,8 @@ def post_payment_notification(**kwargs):
         id_number = kwargs.get('id_number')
         amount = kwargs.get('amount')
 
+        args = dic
+
         missing_fields = []
         if not (cr_number or id_number):
             missing_fields.append("CR Number or ID Number")
@@ -27,15 +29,17 @@ def post_payment_notification(**kwargs):
             return {"status": False, "message": "Invalid amount provided"}
 
         # Get Customer
-        if cr_number:
-            if not frappe.db.exists("Customer", cr_number):
-                return {"status": False, "message": f"Customer with CR Number {cr_number} does not exist"}
-            customer_name = cr_number
-        else:
-            customer = frappe.get_list("Customer", filters={"cr_number": id_number}, fields=["name"])
-            if not customer:
-                return {"status": False, "message": f"Customer with CR Number {id_number} does not exist"}
-            customer_name = customer[0].name
+        # if cr_number:
+        #     if not frappe.db.exists("Customer", cr_number):
+        #         return {"status": False, "message": f"Customer with CR Number {cr_number} does not exist"}
+        #     customer_name = cr_number
+        # else:
+        #     customer = frappe.get_list("Customer", filters={"cr_number": id_number}, fields=["name"])
+        #     if not customer:
+        #         return {"status": False, "message": f"Customer with CR Number {id_number} does not exist"}
+        #     customer_name = customer[0].name
+
+
 
         # Sales Invoice
         invoice = frappe.new_doc("Sales Invoice")
