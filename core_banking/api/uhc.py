@@ -2,6 +2,7 @@ import frappe, requests, json
 from datetime import datetime, timedelta
 from core_banking.api.customer import create_beneficiary
 from core_banking.api.eligibility_llm import UHCEligibilityStatement
+import requests
 
 class HIE:
     def __init__(self) -> None:
@@ -79,6 +80,33 @@ def member_statement_v2(**kwargs):
         payload = json.loads(payload)
     payload.pop("cmd", None)
 
+    # Params for safcom API eligibility check
+    safcom_eligibility_required_params = {
+        "token_api_email": "token_api_email",
+        "token_api_password": "token_api_password",
+        "document_type": "document_type",
+        "document_number": "document_number"
+    }
+
+    # Extract values and check for missing parameters
+    param_values = {}
+    missing_params = []
+
+    for param, key in safcom_eligibility_required_params.items():
+        value = payload.get(key)
+        if not value:
+            missing_params.append(key)
+        param_values[param] = value
+
+    # If any parameters are missing, return an error response
+    if missing_params:
+        return {
+            "error": {
+                "message": f"Missing required parameters: {', '.join(missing_params)}",
+            }
+        }
+
+
     cr_number = payload.pop("id", None)
     # Fetch client first locally
     customer_args = dict(name=cr_number)
@@ -154,11 +182,14 @@ def member_statement_v2(**kwargs):
         )  # Backward compatibility
         employment_type = doc.get("custom_employment_status")
         full_name = doc.get("custom_customer_full_name")
+
+
     return {
         **member_eligibility(
             household_id=household_number, employment_type=employment_type
         ),
         **UHCEligibilityStatement(identification_number=identification_number).nhif_eligibility(),
+        **thatFunction(**param_values),
         "full_name": full_name,
     }
 
@@ -253,3 +284,43 @@ def enqueue_create_beneficiary(**kwargs):
         at_front=False,  # put the job at the front of the queue
         **queue_args,  # kwargs are passed to the method as arguments
     )
+
+
+def thatFunction(**kwargs):
+    # Get token
+    token_url = "https://prd-ms-sha-payments.sha.go.ke/backend/api/v1/auth/apiUser"
+    token_payload = {
+        "email": kwargs.get("token_api_email"),
+        "password": kwargs.get("token_api_password")
+    }
+    
+    try:
+        token_response = requests.post(token_url, json=token_payload)
+
+        if token_response.status_code != 200:
+            return {"error":"Failed to obtain access token"}
+        
+        access_token = token_response.json().get("accessToken")
+
+        # Use token to check eligibility
+        validate_url = "https://prd-ms-sha-payments.sha.go.ke/backend/api/v1/coverage/validate"
+        validate_payload = {
+            "documentType": kwargs.get("document_type"),
+            "documentNumber": kwargs.get("document_number")
+        }
+        headers = {
+            "Authorization": f"Bearer {access_token}"
+        }
+        
+        validate_response = requests.post(validate_url, json=validate_payload, headers=headers)
+        
+        if validate_response.status_code == 200:
+            return {"response": validate_response.json()}
+        else:
+            return {"error": validate_response.json()}
+    
+    except requests.RequestException as e:
+        return {"error": str(e)}
+    except Exception as e:
+        return {"error": f"An unexpected error occurred: {str(e)}"}
+    
