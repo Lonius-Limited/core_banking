@@ -317,7 +317,7 @@ def thatFunction(**kwargs):
         if validate_response.status_code == 200:
             return {"response": validate_response.json()}
         else:
-            return {"response": validate_response.json()}
+            return {"error": validate_response.json()}
     
     except requests.RequestException as e:
         return {"error": str(e)}
