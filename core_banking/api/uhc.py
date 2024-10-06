@@ -25,53 +25,26 @@ class HIE:
     # def create_beneficiary_record(self):
 
 
-class Member:
-    def __init__(self) -> None:
-        pass
+class MeansTesting:
+    def __init__(self, _cr_number) -> None:
+        self.cr_number = _cr_number
 
-    def fetch_member_by_cr_number():
+    def fetch_member_mt(self):
         # Return the same payload
-        pass
-
-
-@frappe.whitelist()
-# Pass Natural Identifiers
-def member_statement(**kwargs):
-    payload = kwargs
-    if isinstance(payload, str):
-        payload = json.loads(payload)
-    payload.pop("cmd", None)
-    _res = HIE().fetch_cr_by_identifiers(**payload)
-    if not _res.get("message"):
-        return dict(
-            eligible=0,
-            reason="Client Records for requested Identifiers were not found.",
-            possible_solution="Client to Register for Social Health Authority using valid identifiers",
+        print(self.cr_number)
+        uri ="/user-means-testing-bsc"
+        _hie  = HIE()
+        response = requests.get(
+            "{}/{}?id={}".format(
+                _hie.hie_base_url, uri, self.cr_number
+            ),
+            auth=(_hie.hie_user_name, _hie.hie_password),
         )
-    client = _res.get("message")
-    if client.get("total") < 1:
-        return dict(
-            eligible=0,
-            reason="Client Records for requested Identifiers were not found.",
-            possible_solution="Client to Register for Social Health Authority using valid identifiers",
-        )
-    _client_obj = client.get("result")[0]
-    employment_type = _client_obj.get("employment_type")
-    full_name = "{} {}".format(
-        _client_obj.get("first_name"), _client_obj.get("last_name")
-    )
+        if response.status_code!= 200: return dict(means_testing_done=0)
+        _obj = response.json()["message"][0]
+        _obj["means_testing_done"] = 1
+        return _obj
 
-    hh = [
-        x
-        for x in _client_obj.get("other_identifications")
-        if x.get("identification_type") == "Household Number"
-    ]
-    if not hh:
-        return {}
-    return {
-        **member_eligibility(household_id=hh[0], employment_type=employment_type),
-        "full_name": full_name,
-    }
 
 
 @frappe.whitelist()
@@ -100,6 +73,7 @@ def member_statement_v2(**kwargs):
     household_number = ""
     employment_type = ""
     # return _customer
+    _client_obj = {}
     if not _customer:
         print("Did not find customer {}, going to HIE...".format(_customer))
         _res = HIE().fetch_cr_by_identifiers(**payload)
@@ -154,7 +128,10 @@ def member_statement_v2(**kwargs):
         )
         # create_beneficiary
     else:
-        print("Found customer {}, proceed".format(_customer))
+        _res = HIE().fetch_cr_by_identifiers(**payload) # Just to get employer details
+        client = _res.get("message")
+        _client_obj = client.get("result")[0] or {}
+        
         doc = frappe.get_doc("Customer", _customer)
         household_number = dict(
             identification_number=doc.get("customer_group")
@@ -166,8 +143,13 @@ def member_statement_v2(**kwargs):
         
     _ep_response = {**thatFunction(**param_values)}
     
+    print(_customer)
+    r = MeansTesting(_customer)
+    
+    
 
     return {
+       
         **member_eligibility(
             household_id=household_number, employment_type=employment_type
         ),
@@ -175,7 +157,13 @@ def member_statement_v2(**kwargs):
             identification_number=identification_number
         ).nhif_eligibility(),
         **_ep_response,
-        "full_name": full_name,
+        "means_testing_details": r.fetch_member_mt(),
+         "full_name": full_name,
+        "client_portal_details": {
+            "employment_type": _client_obj.get("employment_type") or "Unspecified",
+            "employer_name" : _client_obj.get("employer_name"),
+        }
+        
     }
 
 
