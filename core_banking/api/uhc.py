@@ -116,6 +116,7 @@ def member_statement_v2(**kwargs):
         # "household_number",
         # "employment_type",
         param_values = dict(token_api_email="api@safaricom.co.ke",password="jPaVx9#C3]",document_type="3", document_number=_client_obj.get("id") )
+        _customer = _client_obj.get("id")
         enqueue_create_beneficiary(
             **dict(
                 id=_client_obj.get("id"),
