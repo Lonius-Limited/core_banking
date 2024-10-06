@@ -148,27 +148,28 @@ def member_statement_v2(**kwargs):
     r = MeansTesting(_customer)
     
     
-
+    mt_data = r.fetch_member_mt()
     return {
        
         **member_eligibility(
-            household_id=household_number, employment_type=employment_type
+            household_id=household_number, employment_type=employment_type, means_testing_data=mt_data
         ),
         **UHCEligibilityStatement(
             identification_number=identification_number
         ).nhif_eligibility(),
         **_ep_response,
-        "means_testing_details": r.fetch_member_mt(),
+        "means_testing_details": mt_data,
          "full_name": full_name,
         "client_portal_details": {
             "employment_type": _client_obj.get("employment_type") or "Unspecified",
             "employer_name" : _client_obj.get("employer_name"),
         }
         
+        
     }
 
 
-def member_eligibility(household_id=None, employment_type=""):
+def member_eligibility(household_id=None, employment_type="", means_testing_data=None):
     from erpnext.accounts.utils import get_balance_on
 
     # Declaration on EP
@@ -196,6 +197,9 @@ def member_eligibility(household_id=None, employment_type=""):
         # page_length =
     )
 
+# "means_testing_details": {
+#             "means_testing_done": 0
+#         },
     if not invoices:
         if employment_type == "Employed":
             return dict(
@@ -203,11 +207,26 @@ def member_eligibility(household_id=None, employment_type=""):
                 reason="Employer by-product for this member not found.",
                 possible_solution="Employer to submit by-product for Eligibility processing",
             )
-        return dict(
-            eligible=0,
-            reason="SHA Premium Assessment records for this member not found",
-            possible_solution="Member to complete profile and SHA assessment forms on Afyayangu.go.ke",
-        )
+        else:
+            if not means_testing_data:
+                return dict(
+                    eligible=0,
+                    reason="SHA Premium Assessment records for this member not found",
+                    possible_solution="Member to complete profile and SHA assessment forms on Afyayangu.go.ke",
+                )
+            if means_testing_data.get("means_testing_done") == 0:
+                return dict(
+                    eligible=0,
+                    reason="SHA Premium Assessment records for this member not found",
+                    possible_solution="Member to complete profile and SHA assessment forms on Afyayangu.go.ke",
+                )
+            else:
+                return dict(
+                    eligible=0,
+                    reason="SHA Premium Assessment complete but not paid.",
+                    possible_solution="Member to complete pay for SHA Premium annual amount {}".format(means_testing_data.get("annual_contribution")),
+                )
+                
 
     customers = [
         x.get("name")
