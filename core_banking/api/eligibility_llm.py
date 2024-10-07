@@ -22,9 +22,9 @@ class UHCEligibilityStatement:
             "NHIF Prepaid Client Record", in_transition_record
         )
 
-        months_valid = int(_nhif_record.get("no_of_months")) or 1
+        months_valid = float(_nhif_record.get("no_of_months") or 1.0 ) or 1.0
 
-        _days = (months_valid * 30) - 1
+        _days = int(months_valid * 30) - 1
 
         valid_until = parser.parse(str(self.insurance_transition_date), fuzzy=True) + timedelta(days=_days)
 
