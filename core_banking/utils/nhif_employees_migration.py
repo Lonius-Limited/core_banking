@@ -23,7 +23,7 @@ def enqueue_nhif_data_import():
     limit = 13000
     site_name = frappe.local.site  # Automatically fetches the current site name
     # file_name = "paid_up_employed_members_truncated_csv.csv"  # Change this to your file name
-    file_name = "nhif_migr_test_2.csv"
+    file_name = "nhif_migr_test_3_uat_1.csv"
     file_path = frappe.utils.get_site_path("public", "files", file_name)
     
     

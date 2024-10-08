@@ -281,7 +281,7 @@ def enqueue_create_beneficiary(**kwargs):
 
 def thatFunction(**kwargs):
     # Get token
-    print(kwargs)
+    return dict(eligible_employee=0, ep_code=500)
     token_url = "https://prd-ms-sha-payments.sha.go.ke/backend/api/v1/auth/apiUser"
     token_payload = {
         "email": kwargs.get("token_api_email"),
@@ -292,7 +292,7 @@ def thatFunction(**kwargs):
         token_response = requests.post(token_url, json=token_payload)
 
         if token_response.status_code != 200:
-            return {"error": "Failed to obtain access token {}".format(token_response.__dict__)}
+            return {"eligible_employee":0,"error": "Failed to obtain access token {}".format(token_response.__dict__)}
 
         access_token = token_response.json().get("accessToken")
 
