@@ -203,7 +203,7 @@ def member_eligibility(household_id=None, employment_type="", means_testing_data
     if not invoices:
         if employment_type == "Employed":
             return dict(
-                eligible=0,
+                eligible=1,
                 reason="Employer by-product for this member not found.",
                 possible_solution="Employer to submit by-product for Eligibility processing",
             )
