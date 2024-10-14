@@ -335,8 +335,11 @@ def thatFunction(**kwargs):
             return dict(eligible_employee=0, ep_code=400)
 
         if "isEmployed" in list(_ep_response.keys()):
+            _eligible =0
+            if _ep_response.get("isEmployed"):
+                _eligible =1
             return dict(
-                eligible = _ep_response.get("isEmployed"),
+                eligible = _eligible,
                 eligible_employee=_ep_response.get("isEmployed"),
                 policy_end_employer=_ep_response.get("NhifPrepaidEnd"),
                 ep_code=validate_response.status_code,
