@@ -32,19 +32,17 @@ class MeansTesting:
     def fetch_member_mt(self):
         # Return the same payload
         print(self.cr_number)
-        uri ="/user-means-testing-bsc"
-        _hie  = HIE()
+        uri = "/user-means-testing-bsc"
+        _hie = HIE()
         response = requests.get(
-            "{}/{}?id={}".format(
-                _hie.hie_base_url, uri, self.cr_number
-            ),
+            "{}/{}?id={}".format(_hie.hie_base_url, uri, self.cr_number),
             auth=(_hie.hie_user_name, _hie.hie_password),
         )
-        if response.status_code!= 200: return dict(means_testing_done=0)
+        if response.status_code != 200:
+            return dict(means_testing_done=0)
         _obj = response.json()["message"][0]
         _obj["means_testing_done"] = 1
         return _obj
-
 
 
 @frappe.whitelist()
@@ -54,9 +52,7 @@ def member_statement_v2(**kwargs):
         payload = json.loads(payload)
     payload.pop("cmd", None)
 
-
     param_values = {}
-    
 
     cr_number = payload.pop("id", None)
     # Fetch client first locally
@@ -115,7 +111,12 @@ def member_statement_v2(**kwargs):
         # "full_name",
         # "household_number",
         # "employment_type",
-        param_values = dict(token_api_email="api@safaricom.co.ke",password="jPaVx9#C3]",document_type="3", document_number=_client_obj.get("id") )
+        param_values = dict(
+            token_api_email="api@safaricom.co.ke",
+            password="jPaVx9#C3]",
+            document_type="3",
+            document_number=_client_obj.get("id"),
+        )
         _customer = _client_obj.get("id")
         enqueue_create_beneficiary(
             **dict(
@@ -129,43 +130,46 @@ def member_statement_v2(**kwargs):
         )
         # create_beneficiary
     else:
-        _res = HIE().fetch_cr_by_identifiers(**payload) # Just to get employer details
+        _res = HIE().fetch_cr_by_identifiers(**payload)  # Just to get employer details
         client = _res.get("message")
         _client_obj = client.get("result")[0] or {}
-        
+
         doc = frappe.get_doc("Customer", _customer)
         household_number = dict(
             identification_number=doc.get("customer_group")
         )  # Backward compatibility
         employment_type = doc.get("custom_employment_status")
         full_name = doc.get("custom_customer_full_name")
-        
-        param_values = dict(token_api_email="api@safaricom.co.ke",password="jPaVx9#C3]",document_type="3", document_number=_customer )
-        
+
+        param_values = dict(
+            token_api_email="api@safaricom.co.ke",
+            password="jPaVx9#C3]",
+            document_type="3",
+            document_number=_customer,
+        )
+
     _ep_response = {**thatFunction(**param_values)}
-    
+
     print(_customer)
     r = MeansTesting(_customer)
-    
-    
+
     mt_data = r.fetch_member_mt()
     return {
-       
         **member_eligibility(
-            household_id=household_number, employment_type=employment_type, means_testing_data=mt_data
+            household_id=household_number,
+            employment_type=employment_type,
+            means_testing_data=mt_data,
         ),
         **UHCEligibilityStatement(
             identification_number=identification_number
         ).nhif_eligibility(),
         **_ep_response,
         "means_testing_details": mt_data,
-         "full_name": full_name,
+        "full_name": full_name,
         "client_portal_details": {
             "employment_type": _client_obj.get("employment_type") or "Unspecified",
-            "employer_name" : _client_obj.get("employer_name"),
-        }
-        
-        
+            "employer_name": _client_obj.get("employer_name"),
+        },
     }
 
 
@@ -197,9 +201,9 @@ def member_eligibility(household_id=None, employment_type="", means_testing_data
         # page_length =
     )
 
-# "means_testing_details": {
-#             "means_testing_done": 0
-#         },
+    # "means_testing_details": {
+    #             "means_testing_done": 0
+    #         },
     if not invoices:
         if employment_type == "Employed":
             return dict(
@@ -224,9 +228,10 @@ def member_eligibility(household_id=None, employment_type="", means_testing_data
                 return dict(
                     eligible=0,
                     reason="SHA Premium Assessment complete but not paid.",
-                    possible_solution="Member to complete pay for SHA Premium annual amount {}".format(means_testing_data.get("annual_contribution")),
+                    possible_solution="Member to complete pay for SHA Premium annual amount {}".format(
+                        means_testing_data.get("annual_contribution")
+                    ),
                 )
-                
 
     customers = [
         x.get("name")
@@ -281,7 +286,16 @@ def enqueue_create_beneficiary(**kwargs):
 
 def thatFunction(**kwargs):
     # Get token
-    return dict(eligible_employee=0, ep_code=500)
+    # return dict(eligible_employee=0, ep_code=500)
+    # {
+    #     "NhifPrepaidEnd": "2024-09-27",
+    #     "request_id_type": 3,
+    #     "request_id_number": "CR2161218929629-8",
+    #     "isNHIFPrepaid": False,
+    #     "message": "The individual is not covered",
+    #     "isEmployed": True,
+    #     "status": 1,
+    # }
     token_url = "https://prd-ms-sha-payments.sha.go.ke/backend/api/v1/auth/apiUser"
     token_payload = {
         "email": kwargs.get("token_api_email"),
@@ -292,7 +306,12 @@ def thatFunction(**kwargs):
         token_response = requests.post(token_url, json=token_payload)
 
         if token_response.status_code != 200:
-            return {"eligible_employee":0,"error": "Failed to obtain access token {}".format(token_response.__dict__)}
+            return {
+                "eligible_employee": 0,
+                "error": "Failed to obtain access token {}".format(
+                    token_response.__dict__
+                ),
+            }
 
         access_token = token_response.json().get("accessToken")
 
@@ -316,8 +335,17 @@ def thatFunction(**kwargs):
             return dict(eligible_employee=0, ep_code=400)
 
         if "isEmployed" in list(_ep_response.keys()):
-            return dict(eligible_employee=1, policy_end_employer=_ep_response.get("NhifPrepaidEnd"), ep_code=validate_response.status_code)
+            return dict(
+                eligible = _ep_response.get("isEmployed"),
+                eligible_employee=_ep_response.get("isEmployed"),
+                policy_end_employer=_ep_response.get("NhifPrepaidEnd"),
+                ep_code=validate_response.status_code,
+            )
         if "error" in list(_ep_response.keys()):
             return dict(eligible_employee=0, ep_code=validate_response.status_code)
     except Exception as e:
-        return dict(eligible_employee=0, ep_code=validate_response.status_code, reason="Error connecting to Employer portal")
+        return dict(
+            eligible_employee=0,
+            ep_code=validate_response.status_code,
+            reason="Error connecting to Employer portal",
+        )
