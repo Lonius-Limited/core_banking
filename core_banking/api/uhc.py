@@ -154,7 +154,7 @@ def member_statement_v2(**kwargs):
     r = MeansTesting(_customer)
 
     mt_data = r.fetch_member_mt()
-    return {
+    _obj = {
         **member_eligibility(
             household_id=household_number,
             employment_type=employment_type,
@@ -171,6 +171,9 @@ def member_statement_v2(**kwargs):
             "employer_name": _client_obj.get("employer_name"),
         },
     }
+    if _client_obj.get("employment_type") == "Employed":
+        _obj["eligible"] = 1
+    return _obj
 
 
 def member_eligibility(household_id=None, employment_type="", means_testing_data=None):
