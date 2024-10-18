@@ -154,15 +154,16 @@ def member_statement_v2(**kwargs):
     r = MeansTesting(_customer)
 
     mt_data = r.fetch_member_mt()
+    uhc_eligibility = UHCEligibilityStatement(
+            identification_number=identification_number
+        ).nhif_eligibility()
     _obj = {
         **member_eligibility(
             household_id=household_number,
             employment_type=employment_type,
             means_testing_data=mt_data,
         ),
-        **UHCEligibilityStatement(
-            identification_number=identification_number
-        ).nhif_eligibility(),
+        **uhc_eligibility,
         **_ep_response,
         "means_testing_details": mt_data,
         "full_name": full_name,
@@ -171,7 +172,7 @@ def member_statement_v2(**kwargs):
             "employer_name": _client_obj.get("employer_name"),
         },
     }
-    if _client_obj.get("employment_type") == "Employed":
+    if _client_obj.get("employment_type") == "Employed" or uhc_eligibility.get("eligible_nhif")==1 or _ep_response.get("eligible")==1:
         _obj["eligible"] = 1
     return _obj
 
@@ -335,7 +336,7 @@ def thatFunction(**kwargs):
         _ep_response = validate_response.json()
 
         if validate_response.status_code == 400:
-            return dict(eligible_employee=0, ep_code=400)
+            return dict(eligible_employee=0, ep_code=400, **_ep_response)
 
         if "isEmployed" in list(_ep_response.keys()):
             _eligible =0
@@ -346,11 +347,13 @@ def thatFunction(**kwargs):
                 eligible_employee=_ep_response.get("isEmployed"),
                 policy_end_employer=_ep_response.get("NhifPrepaidEnd"),
                 ep_code=validate_response.status_code,
+                **_ep_response
             )
         if "error" in list(_ep_response.keys()):
-            return dict(eligible_employee=0, ep_code=validate_response.status_code)
+            return dict(eligible_employee=0, ep_code=validate_response.status_code, **_ep_response)
     except Exception as e:
         return dict(
+            eligible = 0,
             eligible_employee=0,
             ep_code=validate_response.status_code,
             reason="Error connecting to Employer portal",
